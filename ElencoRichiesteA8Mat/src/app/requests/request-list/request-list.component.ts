@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource} from '@angular/material';
-export interface Request {
+import { MatTableDataSource, MatDialog} from '@angular/material'; 
+import { from } from 'rxjs';
+import { AddRequestComponent } from '../add-request/add-request.component';
+export class Request {
   name: string;
   surname: string;
   position: number;
@@ -21,13 +23,28 @@ const ELEMENT_DATA: Request[] = [
   styleUrls: ['./request-list.component.scss']
 })
 export class RequestListComponent implements OnInit {
-  dataSource;
+  requestData:MatTableDataSource<Request>;
   displayedColumns: string[]; 
-  constructor() { }
+  constructor(    private matDialog: MatDialog,) { }
 
   ngOnInit() {
     this.displayedColumns = ['position', 'name', 'surname', 'email', 'note'];
-    this.dataSource = new MatTableDataSource(ELEMENT_DATA);
+    this.requestData = new MatTableDataSource<Request>(ELEMENT_DATA);
   }
 
+  newRequest(){
+    this.matDialog
+      .open(AddRequestComponent, {
+        disableClose: true,
+        maxWidth: '900px',
+        data: {  },
+      })
+      .afterClosed()
+      .subscribe((request: Request) => {       
+        if(request){
+        ELEMENT_DATA.push(request);
+        this.requestData = new MatTableDataSource<Request>(ELEMENT_DATA);}
+      });
+
+  }
 }
