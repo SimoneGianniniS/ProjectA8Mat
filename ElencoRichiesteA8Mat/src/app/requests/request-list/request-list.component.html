@@ -1,18 +1,18 @@
 <h1> Request List </h1> 
 <button type="button"
-          mat-button
+mat-raised-button
           (click)="newRequest()">New Request
           <mat-icon>note_add</mat-icon>
         </button>
 
-<table mat-table [dataSource]="requestData" class="mat-elevation-z8">    
+<table mat-table matSort [dataSource]="requestData" class="mat-elevation-z8">    
     <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> No. </th>
       <td mat-cell *matCellDef="let element"> {{element.position}} </td>
     </ng-container>
   
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <th mat-header-cell *matHeaderCellDef > Name </th>
       <td mat-cell *matCellDef="let element"> {{element.name}} </td>
     </ng-container>
       

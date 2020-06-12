@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource, MatDialog} from '@angular/material'; 
 import { from } from 'rxjs';
 import { AddRequestComponent } from '../add-request/add-request.component';
+import { Key } from 'protractor';
 export class Request {
   name: string;
   surname: string;
@@ -29,22 +30,38 @@ export class RequestListComponent implements OnInit {
 
   ngOnInit() {
     this.displayedColumns = ['position', 'name', 'surname', 'email', 'note'];
-    this.requestData = new MatTableDataSource<Request>(ELEMENT_DATA);
+    this.updatetable();
+    var data = ELEMENT_DATA.sort((a,b) => a.position - b.position);
+    this.requestData = new MatTableDataSource<Request>(data);
   }
 
   newRequest(){
     this.matDialog
       .open(AddRequestComponent, {
         disableClose: true,
-        maxWidth: '900px',
+        minWidth:'500px',        
         data: {  },
       })
       .afterClosed()
       .subscribe((request: Request) => {       
-        if(request){
+        if(request){          
+          var key = 1
+          if(sessionStorage.length > 0){
+              key=sessionStorage.length +1;
+        }
+        sessionStorage.setItem(key.toString(), JSON.stringify(request));        
         ELEMENT_DATA.push(request);
-        this.requestData = new MatTableDataSource<Request>(ELEMENT_DATA);}
+        var data = ELEMENT_DATA.sort((a,b) => a.position - b.position);
+        this.requestData = new MatTableDataSource<Request>(data);}
       });
 
+  }
+
+  updatetable(){       
+    for(var i=0; i < sessionStorage.length; i++){
+      let key = sessionStorage.key(i);
+      var item = JSON.parse(sessionStorage.getItem(key));
+      ELEMENT_DATA.push(item);
+    }
   }
 }
