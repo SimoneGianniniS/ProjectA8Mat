@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, InjectionToken } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
-import { Request } from '../request-list/request-list.component';
+import { Store } from '../request-list/request-list.component';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -38,7 +38,7 @@ export class AddRequestComponent implements OnInit {
 
   onConfirm() {
     if (this.form.valid) {
-      const obj = this.form.value as Request;
+      const obj = this.form.value as Store;
       this.dialogRef.close(obj);
     }
   }

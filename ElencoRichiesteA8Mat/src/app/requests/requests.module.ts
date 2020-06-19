@@ -9,12 +9,16 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
 
 
 @NgModule({
   declarations: [RequestListComponent, AddRequestComponent],
   entryComponents: [AddRequestComponent],
   imports: [
+    BrowserModule,
+    HttpClientModule,
     CommonModule,
     RequestsRoutingModule,
     MatTableModule,

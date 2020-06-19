@@ -3,20 +3,31 @@ import { MatTableDataSource, MatDialog} from '@angular/material';
 import { from } from 'rxjs';
 import { AddRequestComponent } from '../add-request/add-request.component';
 import { Key } from 'protractor';
-export class Request {
-  name: string;
-  surname: string;
-  position: number;
-  email: string;
-  note: string;
+import { ApiService } from 'src/app/api.service';
+
+export class Store {
+  Id:string
+  Name: string;
+  Category: string;
+  Rating: number;
+  Phone: string;
+  Address: Address;
 }
 
-const ELEMENT_DATA: Request[] = [
-  {position: 1, name: 'Roberto', surname: 'Rossi', email: 'robero.rossi@mail.com', note: 'richiesta adesione concorso'},
-  {position: 2, name: 'Roberta', surname: 'Rossi', email: 'roberta.rossi@mail.com', note: 'richiesta 23'},
-  {position: 3, name: 'Carlo', surname: 'Meucci', email: 'carlo.meucci@mail.com', note: 'richiesta carlo'},
-  {position: 4, name: 'Federico', surname: 'Munich', email: 'federico.munich@mail.com', note: 'richiesta munich'}  
-];
+export class Address {
+  Street:string
+  City: string;
+  PostalCode: string;
+  Region: string;
+  Country: string;  
+}
+
+// const ELEMENT_DATA: Store[] = [
+//   {Id:'1',Rating: 1, Name: 'Roberto', Category: 'Rossi', Phone: 'robero.rossi@mail.com', Address: {Street: 'via plutone', City:'paperopoli', PostalCode:'123454', Region:'clondake', Country:'disney'}},
+//   {Id:'2', Rating: 2, Name: 'Roberta', Category: 'Rossi', Phone: 'roberta.rossi@mail.com', Address: {Street: 'via plutone', City:'paperopoli', PostalCode:'123454', Region:'clondake', Country:'disney'}},
+//   {Id:'3', Rating: 3, Name: 'Carlo', Category: 'Meucci', Phone: 'carlo.meucci@mail.com', Address: {Street: 'via plutone', City:'paperopoli', PostalCode:'123454', Region:'clondake', Country:'disney'}},
+//   {Id:'4',Rating: 4, Name: 'Federico', Category: 'Munich', Phone: 'federico.munich@mail.com', Address: {Street: 'via plutone', City:'paperopoli', PostalCode:'123454', Region:'clondake', Country:'disney'}}  
+// ];
 
 @Component({
   selector: 'app-request-list',
@@ -24,44 +35,56 @@ const ELEMENT_DATA: Request[] = [
   styleUrls: ['./request-list.component.scss']
 })
 export class RequestListComponent implements OnInit {
-  requestData:MatTableDataSource<Request>;
+  requestData:MatTableDataSource<Store>;
   displayedColumns: string[]; 
-  constructor(    private matDialog: MatDialog,) { }
+  stores: any = [];
+  constructor(   private api: ApiService, private matDialog: MatDialog,) { }
 
   ngOnInit() {
-    this.displayedColumns = ['position', 'name', 'surname', 'email', 'note'];
-    this.updatetable();
-    var data = ELEMENT_DATA.sort((a,b) => a.position - b.position);
-    this.requestData = new MatTableDataSource<Request>(data);
+    this.displayedColumns = ['Id', 'Name', 'Category', 'Rating', 'Phone'];
+    //this.updatetable();
+    this.getStores();
+    var data = this.stores.sort((a,b) => a.Rating - b.Rating);
+    this.requestData = new MatTableDataSource<Store>(data);
   }
 
-  newRequest(){
-    this.matDialog
-      .open(AddRequestComponent, {
-        disableClose: true,
-        minWidth:'500px',        
-        data: {  },
-      })
-      .afterClosed()
-      .subscribe((request: Request) => {       
-        if(request){          
-          var key = 1
-          if(sessionStorage.length > 0){
-              key=sessionStorage.length +1;
+  // newRequest(){
+  //   this.matDialog
+  //     .open(AddRequestComponent, {
+  //       disableClose: true,
+  //       minWidth:'500px',        
+  //       data: {  },
+  //     })
+  //     .afterClosed()
+  //     .subscribe((request: Store) => {       
+  //       if(request){          
+  //         var key = 1
+  //         if(sessionStorage.length > 0){
+  //             key=sessionStorage.length +1;
+  //       }
+  //       sessionStorage.setItem(key.toString(), JSON.stringify(request));        
+  //       ELEMENT_DATA.push(request);
+  //       var data = ELEMENT_DATA.sort((a,b) => a.Rating - b.Rating);
+  //       this.requestData = new MatTableDataSource<Store>(data);}
+  //     });
+
+  // }
+
+  // updatetable(){       
+  //   for(var i=0; i < sessionStorage.length; i++){
+  //     let key = sessionStorage.key(i);
+  //     var item = JSON.parse(sessionStorage.getItem(key));
+  //     ELEMENT_DATA.push(item);
+  //   }
+  // }
+
+  getStores() {
+    this.api.getStore()
+      .subscribe(data => {
+        for (const d of (data as any)) {
+          this.stores.push(d);
         }
-        sessionStorage.setItem(key.toString(), JSON.stringify(request));        
-        ELEMENT_DATA.push(request);
-        var data = ELEMENT_DATA.sort((a,b) => a.position - b.position);
-        this.requestData = new MatTableDataSource<Request>(data);}
+        
       });
-
-  }
-
-  updatetable(){       
-    for(var i=0; i < sessionStorage.length; i++){
-      let key = sessionStorage.key(i);
-      var item = JSON.parse(sessionStorage.getItem(key));
-      ELEMENT_DATA.push(item);
-    }
   }
 }
