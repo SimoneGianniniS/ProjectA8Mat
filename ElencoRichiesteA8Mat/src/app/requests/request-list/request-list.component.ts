@@ -81,10 +81,13 @@ export class RequestListComponent implements OnInit {
   getStores() {
     this.api.getStore()
       .subscribe(data => {
-        for (const d of (data as any)) {
-          this.stores.push(d);
-        }
+        debugger;       
+
+        // for (const d of (data as any)) {
+        //   this.stores.push(d);
+        // }
         
-      });
-  }
+       });  
+      }
+  
 }
