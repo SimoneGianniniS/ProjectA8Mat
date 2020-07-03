@@ -4,6 +4,7 @@ import { from } from 'rxjs';
 import { AddRequestComponent } from '../add-request/add-request.component';
 import { Key } from 'protractor';
 import { ApiService } from 'src/app/api.service';
+import { HttpResponse } from '@angular/common/http';
 
 export class Store {
   Id:string
@@ -41,34 +42,38 @@ export class RequestListComponent implements OnInit {
   constructor(   private api: ApiService, private matDialog: MatDialog,) { }
 
   ngOnInit() {
-    this.displayedColumns = ['Id', 'Name', 'Category', 'Rating', 'Phone'];
+    this.displayedColumns = ['Id', 'Name', 'Category', 'Rating', 'Phone', 'Street', 'City', 'PostalCode','Region', 'Country'];
     //this.updatetable();
-    this.getStores();
-    var data = this.stores.sort((a,b) => a.Rating - b.Rating);
-    this.requestData = new MatTableDataSource<Store>(data);
+    this.getStores();   
   }
 
-  // newRequest(){
-  //   this.matDialog
-  //     .open(AddRequestComponent, {
-  //       disableClose: true,
-  //       minWidth:'500px',        
-  //       data: {  },
-  //     })
-  //     .afterClosed()
-  //     .subscribe((request: Store) => {       
-  //       if(request){          
-  //         var key = 1
-  //         if(sessionStorage.length > 0){
-  //             key=sessionStorage.length +1;
-  //       }
-  //       sessionStorage.setItem(key.toString(), JSON.stringify(request));        
-  //       ELEMENT_DATA.push(request);
-  //       var data = ELEMENT_DATA.sort((a,b) => a.Rating - b.Rating);
-  //       this.requestData = new MatTableDataSource<Store>(data);}
-  //     });
+  newRequest(){
+    this.matDialog
+      .open(AddRequestComponent, {
+        disableClose: true,
+        minWidth:'500px',        
+        data: {  },
+      })
+      .afterClosed()
+      .subscribe((request: Store) => {  
+        debugger;        
+        if(request){          
+        //   var key = 1
+        //   if(sessionStorage.length > 0){
+        //       key=sessionStorage.length +1;              
+        // }
+        // sessionStorage.setItem(key.toString(), JSON.stringify(request));        
+        // this.stores.push(request);
+        // var data = this.stores.sort((a,b) => a.Rating - b.Rating);
+        // this.requestData = new MatTableDataSource<Store>(data);
+        this.api.postStore(request) .subscribe(res  => {              
+          this.getStores(); 
+         });  
+        
+      }
+      });
 
-  // }
+  }
 
   // updatetable(){       
   //   for(var i=0; i < sessionStorage.length; i++){
@@ -80,13 +85,14 @@ export class RequestListComponent implements OnInit {
 
   getStores() {
     this.api.getStore()
-      .subscribe(data => {
-        debugger;       
-
-        // for (const d of (data as any)) {
-        //   this.stores.push(d);
-        // }
-        
+      .subscribe(res  => {
+        this.stores = [];
+        for (const d of (res as any)) {
+          
+          this.stores.push(d);
+        }
+        var data = this.stores.sort((a,b) => a.Rating - b.Rating);
+        this.requestData = new MatTableDataSource<Store>(data);
        });  
       }
   
